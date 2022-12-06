@@ -1,0 +1,38 @@
+# Configures Nginx to serve the /airbnb-onepage/ route on AirBnB_clone_v2
+
+server {
+    # Listen on port 80
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    # Use server IP as domain name
+    server_name localhost 44.210.86.178;
+
+    root   /var/www/html;
+    index  index.html index.htm index.nginx-debian.html;
+
+    rewrite ^/redirect_me https://github.com/thala254 permanent;
+
+    # Customize HTTP response header
+    add_header X-Served-By ${hostname};
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /hbnb_static/ {
+        alias /data/web_static/current/;
+        autoindex on;
+    }
+ 
+    # Serve /airbnb-onepage/ route on AirBnB_clone_v2
+    location /airbnb-onepage/ {
+        proxy_pass http://0.0.0.0:5000;
+    }
+
+    # 404 error page
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
+}
